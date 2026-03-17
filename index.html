@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Annamacharya Event Management</title>
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ff0080, #7928ca, #2afadf, #f6d365);
+            color: white;
+            animation: gradientBG 15s ease infinite;
+            background-size: 400% 400%;
+        }
+
+        @keyframes gradientBG {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        header {
+            text-align: center;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.8);
+            border-bottom: 3px solid gold;
+        }
+
+        header img {
+            width: 90px;
+            display: block;
+            margin: 0 auto;
+            /* center logo */
+        }
+
+        header h1 {
+            color: gold;
+        }
+
+        nav {
+            text-align: center;
+            padding: 10px;
+            background: rgba(20, 20, 20, 0.8);
+        }
+
+        nav button {
+            margin: 5px;
+            padding: 10px;
+            background: linear-gradient(to right, gold, orange);
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        section {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
+        }
+
+        section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .card {
+            background: rgba(0, 0, 0, 0.75);
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid gold;
+            text-align: center;
+        }
+
+        input,
+        select {
+            width: 90%;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            border: none;
+        }
+
+        button.submit {
+            background: linear-gradient(to right, #00f260, #0575e6);
+            padding: 10px;
+            width: 95%;
+            font-weight: bold;
+            cursor: pointer;
+            color: white;
+        }
+
+        .msg {
+            color: lightgreen;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <img
+            src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/AITS_Rajampet_logo.png/220px-AITS_Rajampet_logo.png">
+        <h1>🏫 Annamacharya Event System ✨</h1>
+    </header>
+
+    <!-- NAVBAR (HIDDEN FIRST) -->
+    <nav id="navbar" style="display:none;">
+        <button onclick="showPage('home')">🏠 Home</button>
+        <button onclick="showPage('events')">🎉 Events</button>
+        <button onclick="showPage('register')">📝 Register</button>
+        <button onclick="showPage('admin')">🛠️ Admin</button>
+        <button onclick="showPage('createEvent')">➕ Create Event</button>
+        <button onclick="logout()">🚪 Logout</button>
+    </nav>
+
+    <!-- LOGIN -->
+    <section id="login" class="active">
+        <div class="card">
+            <img src="https://upload.wikimedia.org/wikipedia/en/thumb/5/5f/AITS_Rajampet_logo.png/220px-AITS_Rajampet_logo.png"
+                width="80">
+            <h2>🔐 Login</h2>
+            <input id="username" placeholder="Username">
+            <input id="password" type="password" placeholder="Password">
+            <button class="submit" onclick="login()">Login 🚀</button>
+            <p class="msg" id="loginMsg"></p>
+        </div>
+    </section>
+
+    <!-- HOME -->
+    <section id="home">
+        <div class="card">
+            <h2>🏠 Welcome</h2>
+
+            <img src="https://www.bing.com/th/id/OIP.-Qx5QFF9Tz_bFBqnvmHoUgHaEe?w=274&h=211&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2"
+                width="250">
+
+            <p>🌸 Welcome to Annamacharya Event System 🎉</p>
+        </div>
+    </section>
+
+    <!-- EVENTS -->
+    <section id="events">
+        <div class="card">
+            <h2>🎉 Events</h2>
+            <div id="eventList"></div>
+        </div>
+    </section>
+
+    <!-- REGISTER -->
+    <section id="register">
+        <div class="card">
+            <h2>📝 Register</h2>
+            <input id="name" placeholder="Full Name">
+            <input id="email" placeholder="Email">
+            <select id="eventSelect"></select>
+            <button class="submit" onclick="register()">Register</button>
+            <p class="msg" id="regMsg"></p>
+        </div>
+    </section>
+
+    <!-- ADMIN -->
+    <section id="admin">
+        <div class="card">
+            <h2>🛠️ Admin Dashboard</h2>
+            <div id="studentList"></div>
+        </div>
+    </section>
+
+    <!-- CREATE EVENT -->
+    <section id="createEvent">
+        <div class="card">
+            <h2>➕ Create Event</h2>
+            <input id="eventName" placeholder="Event Name">
+            <button class="submit" onclick="createEvent()">Add Event</button>
+            <p class="msg" id="createMsg"></p>
+        </div>
+    </section>
+
+    <script>
+
+        // NAVIGATION
+        function showPage(page) {
+            document.querySelectorAll("section").forEach(s => s.classList.remove("active"));
+            document.getElementById(page).classList.add("active");
+
+            if (page === "events") loadEvents();
+            if (page === "register") loadEventOptions();
+            if (page === "admin") loadStudents();
+        }
+
+        // LOGIN
+        function login() {
+            let user = document.getElementById("username").value;
+            let pass = document.getElementById("password").value;
+
+            if (user === "admin" && pass === "1234") {
+                document.getElementById("loginMsg").innerText = "✅ Login Successful!";
+                document.getElementById("navbar").style.display = "block";
+
+                setTimeout(() => {
+                    showPage('home');
+                }, 1000);
+            } else {
+                document.getElementById("loginMsg").innerText = "❌ Invalid credentials";
+            }
+        }
+
+        // LOGOUT
+        function logout() {
+            document.getElementById("navbar").style.display = "none";
+            showPage("login");
+        }
+
+        // CREATE EVENT
+        async function createEvent() {
+
+            let name = document.getElementById("eventName").value;
+
+            if (!name) return;
+
+            await fetch("http://localhost:5000/events", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ name })
+            });
+
+            document.getElementById("createMsg").innerText = "🎉 Saved to Database!";
+            loadEvents();
+        }
+
+        // Add event
+        events.push(name);
+
+        // Save
+        localStorage.setItem("events", JSON.stringify(events));
+
+        // Clear input
+        input.value = "";
+
+        // Success
+        msg.innerText = "🎉 Event Added!";
+
+        // 🔥 Force refresh UI (SMART FIX)
+        setTimeout(() => {
+            showPage("events");
+            loadEvents();
+        }, 300);
+
+        // LOAD EVENTS
+        async function loadEvents() {
+
+            let res = await fetch("http://localhost:5000/events");
+            let events = await res.json();
+
+            let list = "";
+
+            events.forEach(e => {
+                list += `<p>🎯 ${e.name}</p>`;
+            });
+
+            document.getElementById("eventList").innerHTML = list;
+        }
+
+        // Clear first (IMPORTANT)
+        eventList.innerHTML = "";
+
+        let events = JSON.parse(localStorage.getItem("events")) || [];
+
+        // Default events if empty
+        if (events.length === 0) {
+            events = ["Cultural Fest", "Hackathon"];
+        }
+
+        // Add events dynamically (BEST PRACTICE)
+        events.forEach(e => {
+            let p = document.createElement("p");
+            p.innerText = "🎯 " + e;
+
+            eventList.appendChild(p);
+        });
+
+        // LOAD EVENT OPTIONS
+        function loadEventOptions() {
+            let events = JSON.parse(localStorage.getItem("events")) || ["Cultural Fest", "Hackathon"];
+            let options = `<option>Select Event</option>`;
+            events.forEach(e => options += `<option>${e}</option>`);
+            document.getElementById("eventSelect").innerHTML = options;
+        }
+
+        // REGISTER
+        function register() {
+            let name = document.getElementById("name").value;
+            let email = document.getElementById("email").value;
+            let event = document.getElementById("eventSelect").value;
+
+            if (name === "" || email === "" || event === "Select Event") return;
+
+            let reg = JSON.parse(localStorage.getItem("registrations")) || [];
+            reg.push({ name, email, event });
+            localStorage.setItem("registrations", JSON.stringify(reg));
+
+            document.getElementById("regMsg").innerText = "Registered 🎉";
+        }
+
+        // ADMIN
+        function loadStudents() {
+            let reg = JSON.parse(localStorage.getItem("registrations")) || [];
+            let list = "";
+
+            reg.forEach((r, index) => {
+                list += `<p>👤 ${r.name} | ${r.email} | ${r.event}
+    <button onclick="deleteUser(${index})">❌</button></p>`;
+            });
+
+            document.getElementById("studentList").innerHTML = list || "No data";
+        }
+
+        // DELETE USER
+        function deleteUser(index) {
+            let reg = JSON.parse(localStorage.getItem("registrations")) || [];
+            reg.splice(index, 1);
+            localStorage.setItem("registrations", JSON.stringify(reg));
+            loadStudents();
+        }
+
+    </script>
+
+</body>
+
+</html>
