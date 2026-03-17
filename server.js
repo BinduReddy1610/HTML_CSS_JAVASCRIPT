@@ -75,6 +75,6 @@ app.delete("/events/:id", async (req, res) => {
 });
 
 /* 🔥 START SERVER */
-app.listen(5500, () => {
-    console.log("🚀 Server running at http://localhost:5500");
+app.listen(5000, () => {
+    console.log("🚀 Server running at http://localhost:5000");
 });
